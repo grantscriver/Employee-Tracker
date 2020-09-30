@@ -1,8 +1,10 @@
 const inquirer = require("inquirer");
+const Choice = require("inquirer/lib/objects/choice");
 
 var mysql = require("mysql");
+const { type } = require("os");
 
-// We successfully made this connection below... how do we make it so that when we push to github the user can connect?
+// I successfully made this connection below... how do we make it so that when we push to github the user can connect?
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -21,25 +23,56 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  displayEmployees();
+  mainMenu();
 });
+
+function mainMenu() {
+  inquirer.prompt([
+    {
+      name: "mainPrompt",
+      type: "list",
+      message: "Main Menu",
+      choices: [
+        "Add Department",
+        "Add Role",
+        "Add Employee",
+        "View Departments",
+        "View Roles",
+        "View Employees",
+        "Update Employee Role",
+      ],
+    },
+  ]);
+}
 
 // This query is working, but the output is objects.  Please help me display the query results
 function displayEmployees() {
   console.log("Displaying employees...\n");
-  var query = connection.query("SELECT * FROM employee", function (err, res) {
+  connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
-    //
-    // this works, but just gives first name of first row
-    //console.log(res[0].first_name+ " employees displayed!\n");
-    //
-    // this gives undefined
-    //console.log(res.affectedRows + " employees displayed!\n");
-    //
-    //this gives objects as results
-    console.log(res + " employees displayed!\n");
-  });
 
+    console.table(res);
+    addDepartment();
+  });
   // logs the actual query being run
-  console.log(query.sql);
+}
+
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        name: "department",
+        type: "input",
+        message: "What department do you want to add?",
+      },
+    ])
+    .then((answer) => {
+      console.log(answer.department);
+      connection.query(
+        `INSERT INTO department (name) VALUES ("${answer.department}")`,
+        function (err, res) {
+          if (err) throw err;
+        }
+      );
+    });
 }

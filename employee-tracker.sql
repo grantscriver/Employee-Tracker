@@ -66,9 +66,9 @@ VALUES ("Production");
 
 
 select *
-from role
+from employee;
 
-select * from employee INNER JOIN role on employee.id = role.id
+select * from employee INNER JOIN role on employee.id = role.id;
 
 
 drop table role;
