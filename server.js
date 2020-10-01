@@ -207,7 +207,28 @@ function getManagerId() {
     });
 }
 
-// This query is working, but the output is objects.  Please help me display the query results
+function viewDepartments() {
+  console.log("Displaying departments...\n");
+  connection.query("SELECT * FROM department", function (err, res) {
+    if (err) throw err;
+
+    console.table(res);
+    mainMenu();
+  });
+  // logs the actual query being run
+}
+
+function viewRoles() {
+  console.log("Displaying roles...\n");
+  connection.query("SELECT * FROM role", function (err, res) {
+    if (err) throw err;
+
+    console.table(res);
+    mainMenu();
+  });
+  // logs the actual query being run
+}
+
 function viewEmployees() {
   console.log("Displaying employees...\n");
   connection.query("SELECT * FROM employee", function (err, res) {
