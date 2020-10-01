@@ -1,8 +1,10 @@
 const inquirer = require("inquirer");
-const Choice = require("inquirer/lib/objects/choice");
+// const Choice = require("inquirer/lib/objects/choice");
 
 var mysql = require("mysql");
-const { type } = require("os");
+const { user, password } = require("./config");
+// const { type } = require("os");
+// const { allowedNodeEnvironmentFlags } = require("process");
 
 // I successfully made this connection below... how do we make it so that when we push to github the user can connect?
 
@@ -10,13 +12,13 @@ var connection = mysql.createConnection({
   host: "localhost",
 
   // Your port; if not 3306
-  port: 3306,
+  // port: 3306,
 
   // Your username
-  user: "theman",
+  user: user,
 
   // Your password
-  password: "password",
+  password: password,
   database: "employeetracker",
 });
 
@@ -27,34 +29,45 @@ connection.connect(function (err) {
 });
 
 function mainMenu() {
-  inquirer.prompt([
-    {
-      name: "mainPrompt",
-      type: "list",
-      message: "Main Menu",
-      choices: [
-        "Add Department",
-        "Add Role",
-        "Add Employee",
-        "View Departments",
-        "View Roles",
-        "View Employees",
-        "Update Employee Role",
-      ],
-    },
-  ]);
-}
+  let roleTitle;
+  let roleSalary;
+  let firstName;
+  let lastName;
 
-// This query is working, but the output is objects.  Please help me display the query results
-function displayEmployees() {
-  console.log("Displaying employees...\n");
-  connection.query("SELECT * FROM employee", function (err, res) {
-    if (err) throw err;
-
-    console.table(res);
-    addDepartment();
-  });
-  // logs the actual query being run
+  inquirer
+    .prompt([
+      {
+        name: "mainPrompt",
+        type: "list",
+        message: "Main Menu",
+        choices: [
+          "Add Department",
+          "Add Role",
+          "Add Employee",
+          "View Departments",
+          "View Roles",
+          "View Employees",
+          "Update Employee Role",
+        ],
+      },
+    ])
+    .then((answer) => {
+      if (answer.mainPrompt == "Add Department") {
+        addDepartment();
+      } else if (answer.mainPrompt == "Add Role") {
+        addRole();
+      } else if (answer.mainPrompt == "Add Employee") {
+        addEmployee();
+      } else if (answer.mainPrompt == "View Departments") {
+        viewDepartments();
+      } else if (answer.mainPrompt == "View Roles") {
+        viewRoles();
+      } else if (answer.mainPrompt == "View Employees") {
+        viewEmployees();
+      } else if (answer.mainPrompt == "Update Employee Role") {
+        updateEmployeeRole();
+      }
+    });
 }
 
 function addDepartment() {
@@ -74,5 +87,82 @@ function addDepartment() {
           if (err) throw err;
         }
       );
+      mainMenu();
     });
+}
+
+function addRole() {
+  inquirer
+    .prompt([
+      {
+        name: "role",
+        type: "input",
+        message: "What Role do you want to add?",
+      },
+    ])
+    .then((answer) => {
+      roleTitle = answer.role;
+      getSalary();
+    });
+}
+
+function getSalary() {
+  inquirer
+    .prompt([
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary for this role?",
+      },
+    ])
+    .then((answer) => {
+      roleSalary = answer.salary;
+      getDepartmentId();
+    });
+}
+
+function getDepartmentId() {
+  inquirer
+    .prompt([
+      {
+        name: "departmentId",
+        type: "input",
+        message: "What is the department ID for this role?",
+      },
+    ])
+    .then((answer) => {
+      connection.query(
+        `INSERT INTO role (title, salary, department_id) VALUES ("${roleTitle}","${roleSalary}","${answer.departmentId}")`,
+        function (err, res) {
+          if (err) throw err;
+        }
+      );
+      mainMenu();
+    });
+}
+
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "firstName",
+        type: "input",
+        message: "What is the employee's first name?",
+      },
+    ])
+    .then((answer) => {
+      firstName = answer.firstName;
+      getLastName();
+    });
+}
+// This query is working, but the output is objects.  Please help me display the query results
+function viewEmployees() {
+  console.log("Displaying employees...\n");
+  connection.query("SELECT * FROM employee", function (err, res) {
+    if (err) throw err;
+
+    console.table(res);
+    mainMenu();
+  });
+  // logs the actual query being run
 }

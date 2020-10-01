@@ -63,10 +63,12 @@ VALUES ("Executive");
 
 INSERT INTO department (name)
 VALUES ("Production");
-
+ use employeetracker;
 
 select *
-from employee;
+from role;
+
+INSERT INTO department (name) VALUES ("500f");
 
 select * from employee INNER JOIN role on employee.id = role.id;
 
