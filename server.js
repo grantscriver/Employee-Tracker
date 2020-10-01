@@ -33,6 +33,7 @@ function mainMenu() {
   let roleSalary;
   let firstName;
   let lastName;
+  let roleId;
 
   inquirer
     .prompt([
@@ -155,6 +156,57 @@ function addEmployee() {
       getLastName();
     });
 }
+
+function getLastName() {
+  inquirer
+    .prompt([
+      {
+        name: "lastName",
+        type: "input",
+        message: "What is the employee's last name?",
+      },
+    ])
+    .then((answer) => {
+      lastName = answer.lastName;
+      getRoleId();
+    });
+}
+
+function getRoleId() {
+  inquirer
+    .prompt([
+      {
+        name: "roleId",
+        type: "input",
+        message: "What is the employee's role id?",
+      },
+    ])
+    .then((answer) => {
+      roleId = answer.roleId;
+      getManagerId();
+    });
+}
+
+function getManagerId() {
+  inquirer
+    .prompt([
+      {
+        name: "managerId",
+        type: "input",
+        message: "What is the employee's manager id?",
+      },
+    ])
+    .then((answer) => {
+      connection.query(
+        `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}","${lastName}","${roleId}", "${answer.managerId}")`,
+        function (err, res) {
+          if (err) throw err;
+        }
+      );
+      mainMenu();
+    });
+}
+
 // This query is working, but the output is objects.  Please help me display the query results
 function viewEmployees() {
   console.log("Displaying employees...\n");

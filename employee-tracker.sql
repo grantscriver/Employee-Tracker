@@ -66,7 +66,7 @@ VALUES ("Production");
  use employeetracker;
 
 select *
-from role;
+from employee;
 
 INSERT INTO department (name) VALUES ("500f");
 
