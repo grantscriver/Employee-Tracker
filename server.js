@@ -28,13 +28,17 @@ connection.connect(function (err) {
   mainMenu();
 });
 
+let employeeArray = [];
+let rolesArray = [];
+let employeeNumForRoleChange;
+let roleNumForRoleChange;
+
 function mainMenu() {
   let roleTitle;
   let roleSalary;
   let firstName;
   let lastName;
   let roleId;
-
   inquirer
     .prompt([
       {
@@ -233,7 +237,7 @@ function viewEmployees() {
   console.log("Displaying employees...\n");
 
   connection.query(
-    'select employee.manager_id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary from employee INNER JOIN role on employee.role_id = role.id',
+    'select CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary from employee INNER JOIN role on employee.role_id = role.id',
     function (err, res) {
       if (err) throw err;
       console.table(res);
@@ -245,11 +249,6 @@ function viewEmployees() {
 }
 
 function updateEmployeeRole() {
-  //
-  // create empty array variables for employees and roles
-  //
-  const employeeArray = [];
-  const rolesArray = [];
   //
   // Get an array containing all employees.  this requires mySQL and a for loop
   //
@@ -271,21 +270,60 @@ function updateEmployeeRole() {
     for (var i = 0; i < res.length; i++) {
       rolesArray.push(res[i].title);
     }
-    console.log(rolesArray);
+    chooseEmployeeForRoleUpdate();
   });
-  //
-  // use inquirer with list to ask user which employee they want to update the role of
-  //
-
-  //
-  // use inquirer with list to ask user which role they want the employee chosen above to have.  We need the id from the role table for the chose role
-  //
-
-  //
-  // execute mySQL to replace the employee's role in the employee database by changing the employees role_id
-  //
-
-  //
-  // call mainMenu function when complete
-  //
 }
+
+//
+// use inquirer with list to ask user which employee they want to update the role of
+//
+
+function chooseEmployeeForRoleUpdate() {
+  inquirer
+    .prompt([
+      {
+        name: "employeeChoice",
+        type: "list",
+        message: "Choose employee to update their role",
+        choices: employeeArray,
+      },
+    ])
+    .then((answer) => {
+      for (var i = 0; i < employeeArray.length; i++) {
+        if (answer.employeeChoice == employeeArray[i]) {
+          employeeNumForRoleChange = i;
+        }
+      }
+      chooseRoleForRoleUpdate();
+    });
+}
+
+//
+// use inquirer with list to ask user which role they want the employee chosen above to have.  We need the id from the role table for the chose role
+//
+function chooseRoleForRoleUpdate() {
+  inquirer
+    .prompt([
+      {
+        name: "roleChoice",
+        type: "list",
+        message: "Choose new role for chosen employee",
+        choices: rolesArray,
+      },
+    ])
+    .then((answer) => {
+      for (var i = 0; i < rolesArray.length; i++) {
+        if (answer.roleChoice == rolesArray[i]) {
+          roleNumForRoleChange = i;
+        }
+      }
+      //  replaceRoleForEmployee();
+    });
+}
+//
+// execute mySQL to replace the employee's role in the employee database by changing the employees role_id
+//
+
+//
+// call mainMenu function when complete
+//
