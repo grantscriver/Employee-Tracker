@@ -113,7 +113,7 @@ function getSalary() {
       {
         name: "salary",
         type: "input",
-        message: "What is the salary for this role?",
+        message: "What is the annual salary for this role?",
       },
     ])
     .then((answer) => {
@@ -128,7 +128,7 @@ function getDepartmentId() {
       {
         name: "departmentId",
         type: "input",
-        message: "What is the department ID for this role?",
+        message: "What is the department ID (number) for this role?",
       },
     ])
     .then((answer) => {
@@ -178,7 +178,7 @@ function getRoleId() {
       {
         name: "roleId",
         type: "input",
-        message: "What is the employee's role id?",
+        message: "What is the employee's role id? (number)",
       },
     ])
     .then((answer) => {
@@ -193,7 +193,7 @@ function getManagerId() {
       {
         name: "managerId",
         type: "input",
-        message: "What is the employee's manager id?",
+        message: "What is the employee id (number) of this employee's manager?",
       },
     ])
     .then((answer) => {
@@ -231,11 +231,61 @@ function viewRoles() {
 
 function viewEmployees() {
   console.log("Displaying employees...\n");
-  connection.query("SELECT * FROM employee", function (err, res) {
+
+  connection.query(
+    'select employee.manager_id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary from employee INNER JOIN role on employee.role_id = role.id',
+    function (err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    }
+  );
+
+  // logs the actual query being run
+}
+
+function updateEmployeeRole() {
+  //
+  // create empty array variables for employees and roles
+  //
+  const employeeArray = [];
+  const rolesArray = [];
+  //
+  // Get an array containing all employees.  this requires mySQL and a for loop
+  //
+  connection.query(
+    'select CONCAT(first_name, " ", last_name) as employee_name FROM employee',
+    function (err, res) {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        employeeArray.push(res[i].employee_name);
+      }
+    }
+  );
+  //
+  // Get an array containing all roles.  this requires mySQL and a for loop
+  //
+  connection.query("select title from role", function (err, res) {
     if (err) throw err;
 
-    console.table(res);
-    mainMenu();
+    for (var i = 0; i < res.length; i++) {
+      rolesArray.push(res[i].title);
+    }
+    console.log(rolesArray);
   });
-  // logs the actual query being run
+  //
+  // use inquirer with list to ask user which employee they want to update the role of
+  //
+
+  //
+  // use inquirer with list to ask user which role they want the employee chosen above to have.  We need the id from the role table for the chose role
+  //
+
+  //
+  // execute mySQL to replace the employee's role in the employee database by changing the employees role_id
+  //
+
+  //
+  // call mainMenu function when complete
+  //
 }
