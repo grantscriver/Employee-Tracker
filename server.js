@@ -237,7 +237,7 @@ function viewEmployees() {
   console.log("Displaying employees...\n");
 
   connection.query(
-    'select CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary from employee INNER JOIN role on employee.role_id = role.id',
+    'select employee.id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary, employee.manager_id from employee INNER JOIN role on employee.role_id = role.id',
     function (err, res) {
       if (err) throw err;
       console.table(res);
@@ -256,6 +256,7 @@ function updateEmployeeRole() {
     'select CONCAT(first_name, " ", last_name) as employee_name FROM employee',
     function (err, res) {
       if (err) throw err;
+      employeeArray = [];
       for (var i = 0; i < res.length; i++) {
         employeeArray.push(res[i].employee_name);
       }
@@ -266,7 +267,7 @@ function updateEmployeeRole() {
   //
   connection.query("select title from role", function (err, res) {
     if (err) throw err;
-
+    rolesArray = [];
     for (var i = 0; i < res.length; i++) {
       rolesArray.push(res[i].title);
     }
@@ -291,7 +292,7 @@ function chooseEmployeeForRoleUpdate() {
     .then((answer) => {
       for (var i = 0; i < employeeArray.length; i++) {
         if (answer.employeeChoice == employeeArray[i]) {
-          employeeNumForRoleChange = i;
+          employeeNumForRoleChange = i + 1;
         }
       }
       chooseRoleForRoleUpdate();
@@ -314,16 +315,29 @@ function chooseRoleForRoleUpdate() {
     .then((answer) => {
       for (var i = 0; i < rolesArray.length; i++) {
         if (answer.roleChoice == rolesArray[i]) {
-          roleNumForRoleChange = i;
+          roleNumForRoleChange = i + 1;
         }
       }
-      //  replaceRoleForEmployee();
+      replaceRoleForEmployee();
     });
 }
 //
 // execute mySQL to replace the employee's role in the employee database by changing the employees role_id
 //
+function replaceRoleForEmployee() {
+  connection.query(
+    `UPDATE employee SET role_id = ${roleNumForRoleChange} WHERE id = ${employeeNumForRoleChange}`,
 
+    function (err, res) {
+      if (err) throw err;
+      console.log("Role Updated!");
+      console.log(
+        `UPDATE employee SET role_id = ${roleNumForRoleChange} WHERE id = ${employeeNumForRoleChange}`
+      );
+      mainMenu();
+    }
+  );
+}
 //
 // call mainMenu function when complete
 //
