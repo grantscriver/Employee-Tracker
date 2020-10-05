@@ -27,6 +27,10 @@ create table role (
     primary key (id)
 );
 
+drop table role;
+drop table employee;
+drop table department;
+
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Michael", "Scott", 1, null);
 
@@ -41,8 +45,6 @@ VALUES ("Jim", "Halpert", 2, 1);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("barney", "rubble", 7, 1);
-
-
 
 
 INSERT INTO role (title, salary, department_id)
@@ -70,22 +72,13 @@ from role;
 
 INSERT INTO department (name) VALUES ("500f");
 
-drop table if exists temp;
-create table temp as select employee.manager_id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, department.name as department, role.title, role.salary from employee 
-INNER JOIN role on employee.id = role.id INNER JOIN department on department.id = role.department_id;
-select temp.employee_name, temp.department, temp.title, temp.salary, CONCAT(employee.first_name,  " ", employee.last_name) as manager_name from temp LEFT JOIN employee on employee.id = temp.manager_id;
+select employee.manager_id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary from employee INNER JOIN role on employee.id = role.id;
 
-select employee.manager_id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, department.name as department, role.title, role.salary from employee 
-INNER JOIN role on employee.id = role.id INNER JOIN department on department.id = role.department_id;
-
-select employee.manager_id, CONCAT(employee.first_name,  " ", employee.last_name) as employee_name, role.title, role.salary from employee INNER JOIN role on employee.id = role.id
-
-select * from employee INNER JOIN role on employee.role_id = role.id
+select * from employee INNER JOIN role on employee.role_id = role.id;
 
 select temp.employee_name, temp.department, temp.title, temp.salary, CONCAT(employee.first_name,  " ", employee.last_name) as manager_name from temp LEFT JOIN employee on employee.id = temp.manager_id;
 
-select title from role
 
-drop table role;
+select CONCAT(first_name, " ", last_name) as employee_name FROM employee;
 
-select CONCAT(first_name, " ", last_name) as employee_name FROM employee
+SELECT * from employee;

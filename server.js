@@ -1,12 +1,10 @@
+// Include require plug-ins and other needed software to run application.
+
 const inquirer = require("inquirer");
-// const Choice = require("inquirer/lib/objects/choice");
-
-var mysql = require("mysql");
+const mysql = require("mysql");
 const { user, password } = require("./config");
-// const { type } = require("os");
-// const { allowedNodeEnvironmentFlags } = require("process");
 
-// I successfully made this connection below... how do we make it so that when we push to github the user can connect?
+// Logs into sql
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -27,6 +25,8 @@ connection.connect(function (err) {
   console.log("connected as id " + connection.threadId + "\n");
   mainMenu();
 });
+
+// These variables are needed across various functions.
 
 let employeeArray = [];
 let rolesArray = [];
@@ -219,7 +219,6 @@ function viewDepartments() {
     console.table(res);
     mainMenu();
   });
-  // logs the actual query being run
 }
 
 function viewRoles() {
@@ -230,7 +229,6 @@ function viewRoles() {
     console.table(res);
     mainMenu();
   });
-  // logs the actual query being run
 }
 
 function viewEmployees() {
@@ -244,14 +242,11 @@ function viewEmployees() {
       mainMenu();
     }
   );
-
-  // logs the actual query being run
 }
 
 function updateEmployeeRole() {
-  //
   // Get an array containing all employees.  this requires mySQL and a for loop
-  //
+
   connection.query(
     'select CONCAT(first_name, " ", last_name) as employee_name FROM employee',
     function (err, res) {
@@ -262,9 +257,9 @@ function updateEmployeeRole() {
       }
     }
   );
-  //
+
   // Get an array containing all roles.  this requires mySQL and a for loop
-  //
+
   connection.query("select title from role", function (err, res) {
     if (err) throw err;
     rolesArray = [];
@@ -275,9 +270,7 @@ function updateEmployeeRole() {
   });
 }
 
-//
 // use inquirer with list to ask user which employee they want to update the role of
-//
 
 function chooseEmployeeForRoleUpdate() {
   inquirer
@@ -338,6 +331,3 @@ function replaceRoleForEmployee() {
     }
   );
 }
-//
-// call mainMenu function when complete
-//
